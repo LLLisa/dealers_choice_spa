@@ -1,0 +1,30 @@
+{
+  "name": "dealers_choice_spa",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LLLisa/dealers_choice_spa.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LLLisa/dealers_choice_spa/issues"
+  },
+  "homepage": "https://github.com/LLLisa/dealers_choice_spa#readme",
+  "dependencies": {
+    "express": "^4.17.3",
+    "faker": "^5.5.3",
+    "pg": "^8.7.3",
+    "sequelize": "^6.16.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
