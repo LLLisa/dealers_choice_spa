@@ -24,8 +24,8 @@ Company.hasMany(Human);
 const syncAndSeed = async () => {
   try {
     await db.sync({ force: true });
-    await createCompany(3);
-    await createHuman(3);
+    await createCompany(8);
+    await createHuman(12);
   } catch (error) {
     console.log(error);
   }
@@ -87,6 +87,23 @@ app.get('/', (req, res) => {
 app.get('/api', (req, res, next) => {
   try {
     res.sendFile(path.join(__dirname, 'index.html'));
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/api/humans', async (req, res, next) => {
+  try {
+    const response = await Human.findAll();
+    res.send(response);
+  } catch (error) {}
+});
+
+app.delete('/api/humans/:id', async (req, res, next) => {
+  try {
+    const trash = await Human.findByPk(req.params.id);
+    await trash.destroy();
+    res.sendStatus(204);
   } catch (error) {
     next(error);
   }
