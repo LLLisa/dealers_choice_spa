@@ -6,9 +6,17 @@
   <title>This tab</title>
 </head>
 <body>
-  <h1>
-    Ranodm Mispelled Data
-  </h1>
-  <ul></ul>
+  <h1>List of Humans</h1>
+  <p>click a human name to delete a human, or a company name to see a directory</p>
+  <ul id="human-list"></ul>
+  <form method="post">
+    <input name="name" type="text" placeholder="name"/>
+    <select name="company-select" id="the-selector">
+    </select>
+    <button type="submit">submit</button>
+  </form>
+  <ul id="company-list"></ul>
 </body>
 </html>
+
+<!-- method="post" action="/api/humans" -->

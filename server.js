@@ -7,6 +7,12 @@ const Human = db.define('human', {
   name: {
     type: Sequelize.STRING,
   },
+  quitJob: {
+    type: Sequelize.VIRTUAL,
+    get: function () {
+      this.companyId = null;
+    },
+  },
 });
 
 const Company = db.define('company', {
@@ -19,7 +25,7 @@ const Company = db.define('company', {
 });
 
 Human.belongsTo(Company);
-Company.hasMany(Human);
+Company.hasMany(Human, { as: 'employees' });
 
 const syncAndSeed = async () => {
   try {
@@ -31,6 +37,7 @@ const syncAndSeed = async () => {
   }
 };
 
+//randomize data seeding-------------------
 let numberOfEmployers;
 const createCompany = async (num) => {
   try {
@@ -40,6 +47,7 @@ const createCompany = async (num) => {
         product: faker.commerce.productName(),
       });
     }
+    numberOfEmployers = await Company.count();
   } catch (error) {
     console.log(error);
   }
@@ -48,8 +56,10 @@ const createCompany = async (num) => {
 const createHuman = async (num) => {
   try {
     for (let i = 0; i < num; i++) {
+      const rand = Math.ceil(Math.random() * numberOfEmployers);
       await Human.create({
         name: faker.name.findName(),
+        companyId: rand,
       });
     }
   } catch (error) {
@@ -61,8 +71,10 @@ const createHuman = async (num) => {
 const express = require('express');
 const app = express();
 const path = require('path');
+// const bodyParser = require('body-parser');
 
 app.use('/src', express.static(path.join(__dirname, 'src')));
+app.use(express.urlencoded());
 
 const init = async () => {
   try {
@@ -94,7 +106,9 @@ app.get('/api', (req, res, next) => {
 
 app.get('/api/humans', async (req, res, next) => {
   try {
-    const response = await Human.findAll();
+    const response = await Human.findAll({
+      include: [Company],
+    });
     res.send(response);
   } catch (error) {}
 });
@@ -106,5 +120,36 @@ app.delete('/api/humans/:id', async (req, res, next) => {
     res.sendStatus(204);
   } catch (error) {
     next(error);
+  }
+});
+
+app.post('/api/humans', async (req, res, next) => {
+  try {
+    console.log(req.body);
+    res.send`
+    <html>
+      ${req.body}
+    </html>
+    `;
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/api/companies', async (req, res, next) => {
+  try {
+    const response = await Company.findAll({});
+    res.send(response);
+  } catch (error) {}
+});
+
+app.get(`/api/companies/:id`, async (req, res, next) => {
+  try {
+    const companyToList = await Company.findByPk(req.params.id, {
+      include: [{ model: Human, as: 'employees' }],
+    });
+    res.send(companyToList);
+  } catch (error) {
+    console.log(error);
   }
 });
