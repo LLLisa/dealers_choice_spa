@@ -71,10 +71,9 @@ const createHuman = async (num) => {
 const express = require('express');
 const app = express();
 const path = require('path');
-// const bodyParser = require('body-parser');
 
 app.use('/src', express.static(path.join(__dirname, 'src')));
-app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: false }));
 
 const init = async () => {
   try {
@@ -113,24 +112,33 @@ app.get('/api/humans', async (req, res, next) => {
   } catch (error) {}
 });
 
-app.delete('/api/humans/:id', async (req, res, next) => {
+app.post('/api/humans/create/:form', async (req, res, next) => {
   try {
-    const trash = await Human.findByPk(req.params.id);
-    await trash.destroy();
-    res.sendStatus(204);
+    const formData = req.params.form.split(',');
+    await Human.create({
+      name: formData[0],
+      companyId: formData[1],
+    });
+    res.sendStatus(201);
   } catch (error) {
     next(error);
   }
 });
 
-app.post('/api/humans', async (req, res, next) => {
+app.post('/api/humans/quit/:id', async (res, req, next) => {
   try {
-    console.log(req.body);
-    res.send`
-    <html>
-      ${req.body}
-    </html>
-    `;
+    console.log('put hiiiiiiiiiiiiiiiiiiiiii');
+    console.log(req.params.id);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.delete('/api/humans/:id', async (req, res, next) => {
+  try {
+    const trash = await Human.findByPk(req.params.id);
+    await trash.destroy();
+    res.sendStatus(204);
   } catch (error) {
     next(error);
   }

@@ -7,15 +7,16 @@
 </head>
 <body>
   <h1>List of Humans</h1>
-  <p>click a human name to delete a human, or a company name to see a directory</p>
+  <p>click a human name to delete a human, or a company name to see a roster</p>
   <ul id="human-list"></ul>
-  <form method="post">
-    <input name="name" type="text" placeholder="name"/>
-    <select name="company-select" id="the-selector">
-    </select>
-    <button type="submit">submit</button>
-  </form>
   <ul id="company-list"></ul>
+  <p>Add a human below:</p>
+  <form>
+    <input name="name" type="text" placeholder="name"/>
+    <select name="companyselect" id="the-selector">
+    </select>
+    <button id="submit-button">submit</button>
+  </form>
 </body>
 </html>
 

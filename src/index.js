@@ -1,29 +1,24 @@
 const humanList = document.querySelector('#human-list');
 const companyList = document.querySelector('#company-list');
 const companySelector = document.querySelector('#the-selector');
-// const submitButton = document.querySelector('button');
-// console.log(quitButton);
+const form = document.querySelector('form');
+const submitButton = document.querySelector('#submit-button');
 
 //list of employees by company doesn't update after employee delete
 const handleItem = async (ev) => {
   try {
     if (ev.target.id === 'human-name') {
       const itemId = ev.target.getAttribute('data-id');
-      // console.log(itemId);
       await axios.delete(`/api/humans/${itemId}`);
     }
     if (ev.target.id === 'company-name') {
       const companyId = ev.target.getAttribute('data-id');
-      const companyToList = await axios.get(`/api/companies/${companyId}`);
-      // console.log(companyToList);
-      companyList.innerHTML = `
-      <h2>${companyToList.data.name}</h2>
-      ${companyToList.data.employees
-        .map((x) => {
-          return `<li>${x.name}</li>`;
-        })
-        .join('')}
-      `;
+      displayCompanyRoster(companyId);
+    }
+    if (ev.target.id === 'quit-job') {
+      const unshackledId = ev.path[1].getAttribute('id') * 1;
+      console.log(unshackledId);
+      await axios.post(`/api/humans/quit/${unshackledId}`);
     }
     init();
   } catch (error) {
@@ -31,15 +26,40 @@ const handleItem = async (ev) => {
   }
 };
 
-const quitJob = (ev) => {
-  console.log(ev.target.name);
+const displayCompanyRoster = async (companyId) => {
+  if (!companyId) {
+    return;
+  }
+  const companyToList = await axios.get(`/api/companies/${companyId}`);
+  companyList.innerHTML = `
+  <h2>${companyToList.data.name}</h2>
+  ${companyToList.data.employees
+    .map((x) => {
+      return `<li>${x.name}</li>`;
+    })
+    .join('')}
+  `;
 };
 
-const newHuman = async (ev) => {
+// const quitJob = async (ev) => {
+//   const unshackledId = ev.path[1].getAttribute('id') * 1;
+//   try {
+//     await axios.put('/api/humans/quit');
+//     init();
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+
+const createHuman = async (ev) => {
   try {
     ev.preventDefault();
-    await axios.post('/api/humans');
-    console.log('hi');
+    const formName = form.name.value;
+    const formCompany = form.companyselect.value;
+    const response = await axios.post(
+      `/api/humans/create/${[formName, formCompany]}`
+    );
+    init();
   } catch (error) {
     console.log(error);
   }
@@ -51,7 +71,7 @@ const init = async () => {
     const mainList = `
       ${content.data
         .map((x) => {
-          return `<li>
+          return `<li id="${x.id}">
           <span id="human-name" data-id="${x.id}">${x.name}</span> of 
           <span id="company-name" data-id="${x.company.id}">${x.company.name}</span>
           <button id="quit-job" >Quit</button>
@@ -69,13 +89,13 @@ const init = async () => {
     `;
     humanList.innerHTML = mainList;
     companySelector.innerHTML = selectorList;
+    displayCompanyRoster();
   } catch (error) {
     console.log(error); //client console
   }
 };
 
 init();
-const quitButton = document.querySelector('#quit-job');
 
 humanList.addEventListener('click', handleItem);
-quitButton.addEventListener('click', quitJob);
+submitButton.addEventListener('click', createHuman);
